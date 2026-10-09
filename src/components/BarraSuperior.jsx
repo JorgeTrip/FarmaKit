@@ -1,6 +1,6 @@
 /**
  * @fileoverview Barra de navegación superior con efecto translúcido Apple (Glassmorphism).
- * Mantiene jerarquía limpia y consistente con la paleta Grises Pro.
+ * Mantiene el contenido perfectamente alineado con el contenedor central de 1200px.
  * @author J.O.T.
  */
 import React from 'react';
@@ -22,48 +22,50 @@ export function BarraSuperior() {
         color: 'text.primary',
       }}
     >
-      <Toolbar sx={{ height: '64px', maxWidth: '1280px', width: '100%', mx: 'auto', px: { xs: 2, sm: 3 } }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-          <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1.5 }}>
-            <Typography
-              variant="h5"
-              component="span"
-              sx={{
-                fontWeight: 800,
-                letterSpacing: '-0.03em',
-                color: 'primary.main',
-                lineHeight: 1,
-              }}
-            >
-              FarmaKit
-            </Typography>
+      <Box sx={{ width: '100%', maxWidth: '1200px', mx: 'auto', px: { xs: 2, sm: 3 }, boxSizing: 'border-box' }}>
+        <Toolbar disableGutters sx={{ height: '64px', width: '100%' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+            <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1.5 }}>
+              <Typography
+                variant="h5"
+                component="span"
+                sx={{
+                  fontWeight: 800,
+                  letterSpacing: '-0.03em',
+                  color: 'primary.main',
+                  lineHeight: 1,
+                }}
+              >
+                FarmaKit
+              </Typography>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                  fontWeight: 500,
+                  letterSpacing: '0.02em',
+                  display: { xs: 'none', sm: 'inline-block' },
+                }}
+              >
+                Herramientas de farmacia
+              </Typography>
+            </Box>
+
             <Typography
               variant="caption"
               sx={{
                 color: 'text.secondary',
-                fontWeight: 500,
-                letterSpacing: '0.02em',
-                display: { xs: 'none', sm: 'inline-block' },
+                fontWeight: 600,
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                fontSize: '0.75rem',
               }}
             >
-              Herramientas de farmacia
+              by J.O.T.
             </Typography>
           </Box>
-
-          <Typography
-            variant="caption"
-            sx={{
-              color: 'text.secondary',
-              fontWeight: 600,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-              fontSize: '0.75rem',
-            }}
-          >
-            by J.O.T.
-          </Typography>
-        </Box>
-      </Toolbar>
+        </Toolbar>
+      </Box>
     </AppBar>
   );
 }

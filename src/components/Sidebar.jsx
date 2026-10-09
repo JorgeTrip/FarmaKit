@@ -32,7 +32,8 @@ const ELEMENTOS_NAVEGACION = [
 
 /**
  * Barra de navegación unificada estilo Apple con Grises Pro.
- * Se comporta como Bottom Bar flotante en móvil y Sidebar esbelto en desktop.
+ * En escritorio se acopla a la columna izquierda del layout central enmarcado.
+ * En móvil se comporta como Bottom Bar flotante estilo iOS.
  */
 function Sidebar({ onSelect, toggleTheme, themeMode, selectedComponent = 'home' }) {
   const theme = useTheme();
@@ -44,8 +45,6 @@ function Sidebar({ onSelect, toggleTheme, themeMode, selectedComponent = 'home' 
       component="nav"
       aria-label="Navegación principal"
       sx={{
-        position: 'fixed',
-        zIndex: 1100,
         backgroundColor: paleta.fondoBarra,
         backdropFilter: configuracionEfectos.desenfoqueBarra,
         WebkitBackdropFilter: configuracionEfectos.desenfoqueBarra,
@@ -54,6 +53,8 @@ function Sidebar({ onSelect, toggleTheme, themeMode, selectedComponent = 'home' 
         boxShadow: configuracionEfectos.sombraFlotante,
         ...(esMovil
           ? {
+              position: 'fixed',
+              zIndex: 1100,
               bottom: 12,
               left: '50%',
               transform: 'translateX(-50%)',
@@ -67,8 +68,8 @@ function Sidebar({ onSelect, toggleTheme, themeMode, selectedComponent = 'home' 
               px: 1,
             }
           : {
+              position: 'sticky',
               top: '80px',
-              left: 16,
               width: '64px',
               height: 'calc(100vh - 100px)',
               borderRadius: configuracionEfectos.radioBorde,
@@ -76,6 +77,7 @@ function Sidebar({ onSelect, toggleTheme, themeMode, selectedComponent = 'home' 
               flexDirection: 'column',
               alignItems: 'center',
               py: 2,
+              flexShrink: 0,
             }),
       }}
     >

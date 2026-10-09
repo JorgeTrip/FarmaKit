@@ -1,6 +1,6 @@
 /**
- * @fileoverview Componente principal FarmaKit con arquitectura modular,
- * paleta Grises Pro, navegación fluida Apple-Style y límite menor a 200 líneas.
+ * @fileoverview Componente principal FarmaKit con layout centralizado y enmarcado
+ * en escritorio dentro de un contenedor de 1200px (Header, Sidebar y Contenido alineados).
  * @author J.O.T.
  */
 import React, { useState, useMemo } from 'react';
@@ -34,15 +34,31 @@ function App() {
       <Box
         sx={{
           minHeight: '100vh',
+          width: '100%',
           backgroundColor: 'background.default',
           color: 'text.primary',
           display: 'flex',
           flexDirection: 'column',
+          alignItems: 'center',
         }}
       >
         <BarraSuperior />
 
-        <Box sx={{ display: 'flex', flexGrow: 1, pt: '64px' }}>
+        {/* Marco centralizado unificado en escritorio: exactamente 1200px centrados */}
+        <Box
+          sx={{
+            width: '100%',
+            maxWidth: '1200px',
+            mx: 'auto',
+            display: 'flex',
+            flexGrow: 1,
+            pt: '80px',
+            pb: { xs: '84px', sm: 4 },
+            px: { xs: 2, sm: 3 },
+            boxSizing: 'border-box',
+            gap: { xs: 0, sm: 3 },
+          }}
+        >
           <Sidebar
             onSelect={setComponenteSeleccionado}
             toggleTheme={alternarTema}
@@ -54,38 +70,24 @@ function App() {
             component="main"
             sx={{
               flexGrow: 1,
+              minWidth: 0,
               width: '100%',
-              minHeight: 'calc(100vh - 64px)',
-              pl: { xs: 0, sm: '88px' },
-              pr: { xs: 0, sm: 2 },
-              pb: { xs: '84px', sm: 4 },
-              pt: { xs: 2, sm: 4 },
               display: 'flex',
-              justifyContent: 'center',
+              flexDirection: 'column',
+              alignItems: 'stretch',
             }}
           >
-            <Container
-              maxWidth="lg"
-              sx={{
-                width: '100%',
-                px: { xs: 2, sm: 3 },
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-              }}
-            >
-              {componenteSeleccionado === 'home' && (
-                <VistaInicioPrecios alSeleccionar={setComponenteSeleccionado} />
-              )}
-              {componenteSeleccionado === 'fileProcessor' && <FileProcessor />}
-              {componenteSeleccionado === 'priceSearch' && <PriceSearch />}
-              {componenteSeleccionado === 'priceUpdater' && <PriceUpdater />}
-              {componenteSeleccionado === 'cashAssistant' && <CashAssistant />}
-              {componenteSeleccionado === 'checklist' && <ClosureChecklist />}
-              {componenteSeleccionado === 'dosageCalculator' && <DosageCalculator />}
-              {componenteSeleccionado === 'medicationPrices' && <MedicationPrices />}
-              {componenteSeleccionado === 'argentinaVademecum' && <ArgentinaVademecum />}
-            </Container>
+            {componenteSeleccionado === 'home' && (
+              <VistaInicioPrecios alSeleccionar={setComponenteSeleccionado} />
+            )}
+            {componenteSeleccionado === 'fileProcessor' && <FileProcessor />}
+            {componenteSeleccionado === 'priceSearch' && <PriceSearch />}
+            {componenteSeleccionado === 'priceUpdater' && <PriceUpdater />}
+            {componenteSeleccionado === 'cashAssistant' && <CashAssistant />}
+            {componenteSeleccionado === 'checklist' && <ClosureChecklist />}
+            {componenteSeleccionado === 'dosageCalculator' && <DosageCalculator />}
+            {componenteSeleccionado === 'medicationPrices' && <MedicationPrices />}
+            {componenteSeleccionado === 'argentinaVademecum' && <ArgentinaVademecum />}
           </Box>
         </Box>
       </Box>

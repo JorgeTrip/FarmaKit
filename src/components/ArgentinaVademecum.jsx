@@ -1,23 +1,35 @@
 /**
- * @fileoverview Componente para consultar el Vademecum de Argentina desde Alfabeta
- * Iframe integrado y responsivo con estética moderna Grises Pro y bordes suaves.
+ * @fileoverview Componente para consultar el Vademecum de Argentina desde Alfabeta.
+ * Permite desplazamiento vertical completo de la web externa mientras adapta
+ * el ancho al 100% sin scroll horizontal.
  * @author J.O.T.
  */
-import React from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Box, Typography, Paper } from '@mui/material';
 
-/**
- * Componente que muestra la página del Vademecum de Argentina de Alfabeta
- * @returns {JSX.Element} Componente con iframe para el vademecum de medicamentos
- */
+const ANCHO_OBJETIVO = 800; // Ancho natural de la web de Alfabeta (780px + márgenes)
+
 function ArgentinaVademecum() {
+  const contenedorRef = useRef(null);
+  const [escala, setEscala] = useState(1);
+
+  useEffect(() => {
+    const ajustarEscala = () => {
+      if (contenedorRef.current) {
+        const anchoDisponible = contenedorRef.current.clientWidth;
+        // Solo escala si la pantalla es más angosta que 800px para que quepa en ancho
+        const nuevaEscala = Math.min(1, anchoDisponible / ANCHO_OBJETIVO);
+        setEscala(nuevaEscala);
+      }
+    };
+
+    ajustarEscala();
+    window.addEventListener('resize', ajustarEscala);
+    return () => window.removeEventListener('resize', ajustarEscala);
+  }, []);
+
   return (
-    <Box sx={{
-      width: '100%',
-      maxWidth: '1200px',
-      margin: '0 auto',
-      boxSizing: 'border-box',
-    }}>
+    <Box sx={{ width: '100%', boxSizing: 'border-box' }}>
       <Typography 
         variant="h4" 
         component="h1" 
@@ -38,24 +50,23 @@ function ArgentinaVademecum() {
           p: { xs: 1, sm: 2 }, 
           mb: 4, 
           borderRadius: '16px',
-          border: (theme) => `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
-          overflow: 'hidden'
+          border: (theme) => `1px solid ${theme.palette.divider}`,
+          overflow: 'hidden',
+          backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#242426' : '#ffffff',
         }}
       >
+        {/* Contenedor con scroll vertical habilitado y scroll horizontal bloqueado */}
         <Box 
+          ref={contenedorRef}
           sx={{
             width: '100%',
-            height: '78vh',
-            minHeight: '500px',
+            height: '82vh',
+            minHeight: '600px',
             borderRadius: '12px',
-            overflow: 'hidden',
-            backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#242426' : '#ffffff',
-            '& iframe': {
-              border: 'none',
-              width: '100%',
-              height: '100%',
-              display: 'block'
-            }
+            overflowX: 'hidden',
+            overflowY: 'auto',
+            display: 'flex',
+            justifyContent: 'center',
           }}
         >
           <iframe 
@@ -63,6 +74,15 @@ function ArgentinaVademecum() {
             title="Vademecum de Argentina - Alfabeta"
             sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
             loading="lazy"
+            style={{
+              border: 'none',
+              width: escala < 1 ? `${ANCHO_OBJETIVO}px` : '100%',
+              minHeight: '1800px', // Altura suficiente para navegar y hacer scroll vertical
+              height: '100%',
+              transform: escala < 1 ? `scale(${escala})` : 'none',
+              transformOrigin: 'top center',
+              display: 'block',
+            }}
           />
         </Box>
       </Paper>
