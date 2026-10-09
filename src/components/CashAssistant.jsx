@@ -204,15 +204,10 @@ function CashAssistant() {
 
   return (
     <Box sx={{
-      p: 3, 
-      width: '900px', 
+      width: '100%',
+      maxWidth: '1200px',
+      margin: '0 auto',
       boxSizing: 'border-box',
-      overflowX: 'hidden',
-      // Agrego manejo de ancho en pantallas pequeñas:
-      '@media (max-width: 600px)': {
-        width: '100%',
-        p: 2
-      }
     }}>
       <Typography variant="h4" component="h1" gutterBottom sx={{ color: '#90caf9', fontWeight: 'bold', textAlign: 'center', mb: 2 }}>
         Asistente de Arqueo de Caja

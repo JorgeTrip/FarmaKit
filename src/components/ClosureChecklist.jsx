@@ -1409,9 +1409,9 @@ function ClosureChecklist() {
     <Box sx={{
       p: { xs: 1, sm: 2, md: 3 }, 
       width: '100%', 
-      maxWidth: '100%',
+      maxWidth: '1200px',
       boxSizing: 'border-box',
-      mx: { xs: 0, md: -3.5 },
+      mx: 'auto',
       '& .MuiFormControl-root': { mt: 1 },
       '& .MuiPaper-root': {
         width: '100%',

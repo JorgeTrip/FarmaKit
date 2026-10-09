@@ -209,8 +209,8 @@ const PriceSearch = () => {
   }, [referenceData]);
   
   return (
-    <Box sx={{ width: '100%', maxWidth: '900px', margin: '0 auto', p: 2 }}>
-      <Typography variant="h4" component="h1" gutterBottom sx={{ color: '#90caf9', fontWeight: 'bold', textAlign: 'center', mb: 2 }}>
+    <Box sx={{ width: '100%', maxWidth: '1200px', margin: '0 auto', p: { xs: 1, sm: 2 } }}>
+      <Typography variant="h4" component="h1" gutterBottom sx={{ color: 'primary.main', fontWeight: 'bold', textAlign: 'center', mb: 2 }}>
         Búsqueda de Precios
       </Typography>
       <Typography variant="subtitle1" sx={{ color: '#f48fb1', fontStyle: 'italic', letterSpacing: '0.1em', textAlign: 'center', mb: 4 }}>

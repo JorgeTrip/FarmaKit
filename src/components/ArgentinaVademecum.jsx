@@ -1,7 +1,6 @@
 /**
- * @fileoverview Componente para mostrar el Vademecum de Argentina desde Alfabeta
- * Este componente muestra la página web externa de Alfabeta para consultar el
- * vademecum de medicamentos dentro de un iframe responsivo.
+ * @fileoverview Componente para consultar el Vademecum de Argentina desde Alfabeta
+ * Iframe integrado y responsivo con estética moderna Grises Pro y bordes suaves.
  * @author J.O.T.
  */
 import React from 'react';
@@ -14,40 +13,48 @@ import { Box, Typography, Paper } from '@mui/material';
 function ArgentinaVademecum() {
   return (
     <Box sx={{
-      p: 3, 
-      width: '910px', 
+      width: '100%',
+      maxWidth: '1200px',
+      margin: '0 auto',
       boxSizing: 'border-box',
-      overflowX: 'hidden',
-      // Agrego manejo de ancho en pantallas pequeñas:
-      '@media (max-width: 600px)': {
-        width: '100%',
-        p: 2
-      }
     }}>
-      <Typography variant="h4" component="h1" gutterBottom sx={{ color: '#90caf9', fontWeight: 'bold', textAlign: 'center', mb: 2 }}>
+      <Typography 
+        variant="h4" 
+        component="h1" 
+        gutterBottom 
+        sx={{ 
+          fontWeight: 700, 
+          letterSpacing: '-0.02em',
+          textAlign: 'center', 
+          mb: 3 
+        }}
+      >
         Vademecum de Argentina
       </Typography>
-      <Typography variant="subtitle1" sx={{ color: '#f48fb1', fontStyle: 'italic', letterSpacing: '0.1em', textAlign: 'center', mb: 4 }}>
       
-      </Typography>
-      
-      <Paper elevation={3} sx={{ p: 2, mb: 4 }}>
+      <Paper 
+        elevation={0} 
+        sx={{ 
+          p: { xs: 1, sm: 2 }, 
+          mb: 4, 
+          borderRadius: '16px',
+          border: (theme) => `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+          overflow: 'hidden'
+        }}
+      >
         <Box 
           sx={{
-            width: '100%', // Cambiado de 810px a 100% para aprovechar todo el ancho disponible
-            maxWidth: '100%',
-            margin: '0 auto',
-            height: '80vh',
+            width: '100%',
+            height: '78vh',
+            minHeight: '500px',
+            borderRadius: '12px',
             overflow: 'hidden',
+            backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#242426' : '#ffffff',
             '& iframe': {
               border: 'none',
               width: '100%',
               height: '100%',
-            },
-            // Ajustes responsivos para diferentes tamaños de pantalla
-            '@media (max-width: 600px)': {
-              width: '100%', // Ocupa todo el ancho en pantallas pequeñas
-              overflowX: 'auto' // Permite desplazamiento horizontal si es necesario
+              display: 'block'
             }
           }}
         >

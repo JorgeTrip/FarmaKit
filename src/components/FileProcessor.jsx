@@ -517,13 +517,14 @@ const handleReferenceFileUpload = async (event) => {
   return (
     <Box 
       sx={{ 
-        p: 3, 
+        p: { xs: 2, sm: 3 }, 
         width: '100%', 
-        maxWidth: '1000px', // Ajustado para coincidir con el ancho máximo de la navbar
+        maxWidth: '1200px',
         margin: '0 auto',
         backgroundColor: 'background.paper',
-        borderRadius: 2,
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+        borderRadius: '16px',
+        border: (theme) => `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
       }}
     >
       <Box sx={{ mb: 3, display: 'flex', gap: 2, flexDirection: 'column', alignItems: 'center' }}>
