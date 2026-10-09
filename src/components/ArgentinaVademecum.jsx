@@ -1,7 +1,8 @@
 /**
  * @fileoverview Componente para consultar el Vademecum de Argentina desde Alfabeta.
- * Permite desplazamiento vertical completo de la web externa mientras adapta
- * el ancho al 100% sin scroll horizontal.
+ * En móviles y escritorio, aprovecha el 100% del ancho del marco sin márgenes ociosos
+ * y adapta el zoom proporcionalmente para evitar scroll horizontal mientras permite
+ * deslizamiento vertical completo.
  * @author J.O.T.
  */
 import React, { useRef, useState, useEffect } from 'react';
@@ -17,15 +18,20 @@ function ArgentinaVademecum() {
     const ajustarEscala = () => {
       if (contenedorRef.current) {
         const anchoDisponible = contenedorRef.current.clientWidth;
-        // Solo escala si la pantalla es más angosta que 800px para que quepa en ancho
+        // Si el ancho disponible es menor que 800px, escala para que ocupe exactamente el 100%
         const nuevaEscala = Math.min(1, anchoDisponible / ANCHO_OBJETIVO);
         setEscala(nuevaEscala);
       }
     };
 
     ajustarEscala();
+    // Ajustar también cuando se estabilicen fuentes/dimensiones
+    const timer = setTimeout(ajustarEscala, 150);
     window.addEventListener('resize', ajustarEscala);
-    return () => window.removeEventListener('resize', ajustarEscala);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', ajustarEscala);
+    };
   }, []);
 
   return (
@@ -38,7 +44,8 @@ function ArgentinaVademecum() {
           fontWeight: 700, 
           letterSpacing: '-0.02em',
           textAlign: 'center', 
-          mb: 3 
+          mb: { xs: 2, sm: 3 },
+          fontSize: { xs: '1.5rem', sm: '2.125rem' }
         }}
       >
         Vademecum de Argentina
@@ -47,26 +54,25 @@ function ArgentinaVademecum() {
       <Paper 
         elevation={0} 
         sx={{ 
-          p: { xs: 1, sm: 2 }, 
+          p: 0, // 0 padding en móvil y desktop para aprovechar el 100% del ancho
           mb: 4, 
-          borderRadius: '16px',
+          borderRadius: { xs: '12px', sm: '16px' },
           border: (theme) => `1px solid ${theme.palette.divider}`,
           overflow: 'hidden',
           backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#242426' : '#ffffff',
         }}
       >
-        {/* Contenedor con scroll vertical habilitado y scroll horizontal bloqueado */}
+        {/* Contenedor con scroll vertical y 100% de ancho útil */}
         <Box 
           ref={contenedorRef}
           sx={{
             width: '100%',
             height: '82vh',
             minHeight: '600px',
-            borderRadius: '12px',
             overflowX: 'hidden',
             overflowY: 'auto',
-            display: 'flex',
-            justifyContent: 'center',
+            WebkitOverflowScrolling: 'touch',
+            position: 'relative',
           }}
         >
           <iframe 
@@ -77,10 +83,10 @@ function ArgentinaVademecum() {
             style={{
               border: 'none',
               width: escala < 1 ? `${ANCHO_OBJETIVO}px` : '100%',
-              minHeight: '1800px', // Altura suficiente para navegar y hacer scroll vertical
+              minHeight: '2200px', // Altura completa para permitir scroll vertical
               height: '100%',
               transform: escala < 1 ? `scale(${escala})` : 'none',
-              transformOrigin: 'top center',
+              transformOrigin: 'top left', // Anclado a la izquierda para ocupar todo el ancho
               display: 'block',
             }}
           />
