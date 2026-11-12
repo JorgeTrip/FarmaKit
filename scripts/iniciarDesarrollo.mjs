@@ -1,6 +1,7 @@
 /**
  * @file iniciarDesarrollo.mjs
- * @description Lanzador del entorno de desarrollo local con Vite, código QR y apertura automática.
+ * @description Lanzador del entorno de desarrollo local para FarmaKit con QR,
+ * negociación dinámica de puerto, sondeo TCP y preservación de lock ante SIGTERM.
  */
 
 import { spawn } from "node:child_process";
@@ -8,7 +9,7 @@ import net from "node:net";
 import qrcode from "qrcode-terminal";
 import { obtenerIpRedLocal } from "./detectorRedLocal.mjs";
 import {
-  leerLockActivo,
+  analizarEstadoLock,
   registrarLock,
   eliminarLock,
   negociarPuertoLibre,
@@ -21,7 +22,7 @@ const PUERTO_BASE = Number(process.env.PORT) || 5173;
  * Espera de forma no bloqueante a que el servidor HTTP esté listo para aceptar conexiones.
  *
  * @param {number} puerto - Puerto TCP a sondear.
- * @returns {Promise<boolean>}
+ * @returns {Promise<boolean>} Verdadero si respondió antes del límite de intentos.
  */
 function esperarServidorListo(puerto) {
   return new Promise((resolve) => {
@@ -39,11 +40,11 @@ function esperarServidorListo(puerto) {
       socket.once("timeout", () => socket.destroy());
       socket.connect(puerto, "127.0.0.1");
 
-      if (intentos > 80) {
+      if (intentos > 120) {
         clearInterval(intervalo);
         resolve(false);
       }
-    }, 150);
+    }, 250);
   });
 }
 
@@ -64,29 +65,31 @@ function abrirNavegador(url) {
 }
 
 async function iniciar() {
-  const lockPrevio = leerLockActivo();
-  if (lockPrevio) {
-    console.log(`⚠️ Servidor ya activo en PID ${lockPrevio.pid}. Cerrando ventana...`);
+  const { estado, datos } = analizarEstadoLock();
+  if (estado === "activo" && datos) {
+    console.log(`⚠️ Servidor ya activo en PID ${datos.pidWorker}. Cerrando ventana...`);
     process.exit(2);
   }
 
-  const puerto = await negociarPuertoLibre(PUERTO_BASE);
+  const esReinicioWatch = estado === "reinicio_watch";
+  const puerto =
+    esReinicioWatch && datos?.puerto ? datos.puerto : await negociarPuertoLibre(PUERTO_BASE);
   registrarLock(puerto);
 
   const ipRed = obtenerIpRedLocal();
   const urlLocal = `http://localhost:${puerto}`;
   const urlMovil = `http://${ipRed}:${puerto}`;
 
-  console.log(`====================================================`);
+  console.log("====================================================");
   console.log(`🚀 Entorno de desarrollo local - ${TITULO_PROYECTO}`);
-  console.log(`====================================================`);
+  console.log("====================================================");
   console.log(`💻 Local (PC):        ${urlLocal}`);
   console.log(`📱 Red local (Móvil):  ${urlMovil}\n`);
-  console.log(`📷 Escanea este código QR con tu móvil (debe estar conectado en la misma red Wi-Fi que esta PC):`);
+  console.log("📷 Escanea este código QR con tu móvil (debe estar conectado en la misma red Wi-Fi que esta PC):");
 
   qrcode.generate(urlMovil, { small: true }, (qr) => {
     console.log(qr);
-    console.log(`====================================================\n`);
+    console.log("====================================================\n");
   });
 
   const esWin = process.platform === "win32";
@@ -94,35 +97,48 @@ async function iniciar() {
   const argumentos = esWin
     ? ["/d", "/s", "/c", "npx", "vite", "--host", "0.0.0.0", "--port", String(puerto)]
     : ["vite", "--host", "0.0.0.0", "--port", String(puerto)];
-  const procesoVite = spawn(ejecutable, argumentos, { stdio: "inherit" });
+  const procesoHijo = spawn(ejecutable, argumentos, { stdio: "inherit" });
 
-  const limpiar = () => {
-    eliminarLock();
-    if (!procesoVite.killed) {
-      procesoVite.kill();
+  let preservarLockEnSalida = false;
+  const cerrarHijo = () => {
+    if (!procesoHijo.killed) {
+      procesoHijo.kill();
     }
   };
 
   process.on("SIGINT", () => {
-    limpiar();
-    process.exit(0);
-  });
-  process.on("SIGTERM", () => {
-    limpiar();
-    process.exit(0);
-  });
-  process.on("exit", limpiar);
-
-  procesoVite.on("exit", (codigo) => {
     eliminarLock();
+    cerrarHijo();
+    process.exit(0);
+  });
+
+  process.on("SIGTERM", () => {
+    preservarLockEnSalida = true;
+    cerrarHijo();
+    process.exit(0);
+  });
+
+  process.on("exit", () => {
+    if (!preservarLockEnSalida) {
+      eliminarLock();
+    }
+    cerrarHijo();
+  });
+
+  procesoHijo.on("exit", (codigo) => {
+    if (!preservarLockEnSalida) {
+      eliminarLock();
+    }
     process.exit(codigo || 0);
   });
 
-  esperarServidorListo(puerto).then((listo) => {
-    if (listo) {
-      abrirNavegador(urlLocal);
-    }
-  });
+  if (esReinicioWatch) {
+    console.log("🔄 Servidor reiniciado automáticamente por cambios en el código.");
+  } else {
+    esperarServidorListo(puerto).then((listo) => {
+      if (listo) abrirNavegador(urlLocal);
+    });
+  }
 }
 
 iniciar().catch((error) => {
